@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Airdrip Store</title>
+
+<style>
+body { margin:0; font-family:Arial; }
+
+/* NAV */
+.nav {
+  display:flex;
+  justify-content:space-between;
+  padding:15px 40px;
+  border-bottom:1px solid #eee;
+  align-items:center;
+  background:white;
+}
+
+.logo { font-weight:bold; font-size:24px; }
+
+.menu a {
+  margin:0 15px;
+  text-decoration:none;
+  color:black;
+  font-weight:500;
+}
+
+.right {
+  display:flex;
+  gap:15px;
+  align-items:center;
+}
+
+input {
+  padding:8px;
+  border-radius:20px;
+  border:1px solid #ccc;
+}
+
+/* HERO */
+.hero {
+  height:70vh;
+  background:url('https://picsum.photos/1200/600') center/cover;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  color:white;
+}
+
+.hero h1 {
+  font-size:50px;
+  margin:0;
+}
+
+.hero button {
+  margin-top:20px;
+  padding:10px 20px;
+  background:black;
+  color:white;
+  border:none;
+}
+
+/* PRODUCTS */
+.products {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+  padding:40px;
+}
+
+.card {
+  border:none;
+}
+
+.card img { width:100%; }
+
+.card p { margin:5px 0; }
+
+button {
+  padding:5px 10px;
+  cursor:pointer;
+}
+
+/* MODAL */
+.modal {
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.5);
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-box {
+  background:white;
+  padding:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="nav">
+  <div class="logo">AIRDRIP</div>
+
+  <div class="menu">
+    <a href="#">Nam</a>
+    <a href="#">Nữ</a>
+    <a href="#">Sale</a>
+  </div>
+
+  <div class="right">
+    <input id="search" placeholder="Tìm kiếm...">
+    <button onclick="openLogin()">Login</button>
+    <button onclick="viewCart()">🛒 (<span id="cart-count">0</span>)</button>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>AIRDRIP</h1>
+  <button>Mua ngay</button>
+</div>
+
+<div class="products" id="products"></div>
+
+<!-- LOGIN -->
+<div class="modal" id="loginModal">
+  <div class="modal-box">
+    <h3>Đăng nhập</h3>
+    <input id="user" placeholder="User"><br><br>
+    <input id="pass" type="password" placeholder="Pass"><br><br>
+    <button onclick="login()">Login</button>
+    <button onclick="closeLogin()">Đóng</button>
+  </div>
+</div>
+
+<script>
+
+const API = [
+  {id:1,name:"Airdrip Air",price:2500000,img:"https://picsum.photos/300?1"},
+  {id:2,name:"Airdrip Zoom",price:3200000,img:"https://picsum.photos/300?2"},
+  {id:3,name:"Airdrip Run",price:2900000,img:"https://picsum.photos/300?3"},
+  {id:4,name:"Airdrip Sport",price:3500000,img:"https://picsum.photos/300?4"}
+]
+
+let cart = JSON.parse(localStorage.getItem("cart")) || []
+updateCart()
+
+function render(data){
+  let html=""
+  data.forEach(p=>{
+    html+=`
+      <div class="card">
+        <img src="${p.img}">
+        <p>${p.name}</p>
+        <p>${p.price.toLocaleString()}₫</p>
+        <button onclick="addCart(${p.id})">Thêm</button>
+      </div>
+    `
+  })
+  document.getElementById("products").innerHTML = html
+}
+
+render(API)
+
+document.getElementById("search").addEventListener("input", e=>{
+  let val = e.target.value.toLowerCase()
+  let filtered = API.filter(p=>p.name.toLowerCase().includes(val))
+  render(filtered)
+})
+
+function addCart(id){
+  cart.push(id)
+  localStorage.setItem("cart", JSON.stringify(cart))
+  updateCart()
+}
+
+function updateCart(){
+  document.getElementById("cart-count").innerText = cart.length
+}
+
+function viewCart(){
+  alert("Giỏ hàng: " + cart.join(", "))
+}
+
+function openLogin(){
+  document.getElementById("loginModal").style.display="flex"
+}
+
+function closeLogin(){
+  document.getElementById("loginModal").style.display="none"
+}
+
+function login(){
+  let user = document.getElementById("user").value
+  let pass = document.getElementById("pass").value
+
+  if(user=="admin" && pass=="123"){
+    alert("Đăng nhập thành công")
+    closeLogin()
+  }else{
+    alert("Sai tài khoản")
+  }
+}
+
+</script>
+
+</body>
+</html>
